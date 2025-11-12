@@ -1,0 +1,32 @@
+package service;
+
+import model.Propietario;
+
+import java.sql.*;
+
+public class PropietarioCtrl {
+    private String URL;
+
+    public PropietarioCtrl(String URL) {
+        this.URL = URL;
+    }
+
+    public int insert(Propietario propietario){
+
+        String sql = "INSERT INTO `propietarios` (`dni`, `nombre`, `apellidos`, `telefono`) VALUES (?, ?, ?, ?);";
+        try(Connection connection = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = connection.prepareStatement(sql)){
+
+            pstmt.setString(1, propietario.getDni());
+            pstmt.setString(2, propietario.getNombre());
+            pstmt.setString(3, propietario.getApellido());
+            pstmt.setString(4, propietario.getTelefono());
+
+            int filas = pstmt.executeUpdate();
+            return filas;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

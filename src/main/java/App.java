@@ -1,10 +1,10 @@
+import model.Propietario;
+import service.PropietarioCtrl;
 import util.ConecctionManager;
 import util.ConfigLoader;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class App {
@@ -32,6 +32,7 @@ public class App {
     private static void showMenu() {
         System.out.println("\n--- GESTIÓN CONCESIONARIO ---");
         System.out.println("1. Crear base de datos");
+        System.out.println("2. Insertar nuevo propietario");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
     }
@@ -40,10 +41,38 @@ public class App {
             case 1:
                 createDatabase();
                 break;
+            case 2:
+                createPropietario();
+                break;
             case 0: break;
             default:
                 System.out.println("Opción no válida. Inténtalo de nuevo." + option);
         }
+    }
+
+    private static void createPropietario(){
+
+        System.out.println("\n --- Insertar Nuevo Propietario --- ");
+        System.out.print("Dni: ");
+        String dni = scanner.nextLine();
+        System.out.print("Nombre: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Apellido: ");
+        String apellido = scanner.nextLine();
+        System.out.print("Telefono: ");
+        String telefono = scanner.nextLine();
+
+        Propietario propietario = new Propietario();
+        propietario.setDni(dni);
+        propietario.setNombre(nombre);
+        propietario.setApellido(apellido);
+        propietario.setTelefono(telefono);
+
+        PropietarioCtrl propietarioCtrl = new PropietarioCtrl(cm.getUrl());
+        propietarioCtrl.insert(propietario);
+
+        System.out.println("Registro guardado");
+
     }
 
     private static void createDatabase() {
