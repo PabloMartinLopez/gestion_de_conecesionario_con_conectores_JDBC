@@ -8,9 +8,8 @@ import java.util.Scanner;
 
 public class App {
     private static ConfigLoader config = new ConfigLoader();
-    private static final String URL = config.getProperty("db.URL");
-    private static final String USER = config.getProperty("db.USER");
-    private static final String PASSWORD = config.getProperty("db.PASSWORD");
+    private static final String URLMSQ = config.getProperty("db.URL.MYSQL");
+    private static final String URLSQL = config.getProperty("db.URL.SQLITE");
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -48,19 +47,20 @@ public class App {
     }
 
     private static void createDatabase() {
-        try(Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        final String URL =  URLSQL;// => jdbc:sqlite:basedatos.db
+        try(Connection connection = DriverManager.getConnection(URL);
             Statement stmt = connection.createStatement()) {
 
             // DROPS
+            String sqlDropTraspasos = "DROP TABLE IF EXISTS traspasos";
             String sqlDropCoches = "DROP TABLE IF EXISTS coches";
             String sqlDropPropietarios = "DROP TABLE IF EXISTS propietarios";
+
+            stmt.executeUpdate(sqlDropTraspasos);
             stmt.executeUpdate(sqlDropCoches);
             stmt.executeUpdate(sqlDropPropietarios);
 
 
-            //  Creacion BD
-            String sqlCreateBD = "CREATE DATABASE IF NOT EXISTS bd_coches";
-            stmt.executeUpdate(sqlCreateBD);
 
             //  Creacion Tabla de propietarios
             String sqlCreatePropietarios = "CREATE TABLE propietarios (" +
@@ -72,7 +72,6 @@ public class App {
             stmt.executeUpdate(sqlCreatePropietarios);
 
             //  Creacion tabla de coches
-
             String sqlCreateCoches = "CREATE TABLE coches (" +
                     "matricula VARCHAR(10) PRIMARY KEY," +
                     "marca VARCHAR(50) NOT NULL," +
@@ -85,10 +84,14 @@ public class App {
             stmt.executeUpdate(sqlCreateCoches);
 
             //  Creacion tabla de traspasos
-            String sqlDropTraspasos = "DROP TABLE IF EXISTS traspasos";
             String sqlCreateTraspasos = "CREATE TABLE traspasos(" +
                     "id INT AUTO_INCREMENT PRIMARY KEY," +
-                    "matricula_coche VARCHAR(10) NOT NULL,)";
+                    "matricula_coche VARCHAR(10) NOT NULL," +
+                    "id_vendedor INT," +
+                    "id_comprador INT NOT NULL," +
+                    "monto_economico DECIMAL(10,2) NOT NULL)";
+
+            stmt.executeUpdate(sqlCreateTraspasos);
 
             System.out.println("Tabla 'cuentas' creada y poblada.");
 
