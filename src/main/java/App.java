@@ -1,3 +1,4 @@
+import util.ConecctionManager;
 import util.ConfigLoader;
 
 import java.sql.Connection;
@@ -8,17 +9,18 @@ import java.util.Scanner;
 
 public class App {
     private static ConfigLoader config = new ConfigLoader();
-    private static final String URLMSQ = config.getProperty("db.URL.MYSQL");
-    private static final String URLSQL = config.getProperty("db.URL.SQLITE");
     private static Scanner scanner = new Scanner(System.in);
+    private static ConecctionManager cm = new ConecctionManager(1);
 
     public static void main(String[] args) {
+
+        connectionManager();
 
         int option;
         do {
             showMenu();
             try {
-                option = Integer.parseInt(scanner.nextLine());
+                option = scanner.nextInt();
                 handleOption(option);
             } catch (NumberFormatException e) {
                 System.out.println("Error: Por favor, introduce un número válido.");
@@ -38,16 +40,14 @@ public class App {
             case 1:
                 createDatabase();
                 break;
-
-
             case 0: break;
             default:
-                System.out.println("Opción no válida. Inténtalo de nuevo.");
+                System.out.println("Opción no válida. Inténtalo de nuevo." + option);
         }
     }
 
     private static void createDatabase() {
-        final String URL =  URLSQL;// => jdbc:sqlite:basedatos.db
+        final String URL = cm.getUrl();
         try(Connection connection = DriverManager.getConnection(URL);
             Statement stmt = connection.createStatement()) {
 
@@ -59,8 +59,6 @@ public class App {
             stmt.executeUpdate(sqlDropTraspasos);
             stmt.executeUpdate(sqlDropCoches);
             stmt.executeUpdate(sqlDropPropietarios);
-
-
 
             //  Creacion Tabla de propietarios
             String sqlCreatePropietarios = "CREATE TABLE propietarios (" +
@@ -93,10 +91,23 @@ public class App {
 
             stmt.executeUpdate(sqlCreateTraspasos);
 
-            System.out.println("Tabla 'cuentas' creada y poblada.");
+            System.out.println("Tabla creada.");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void connectionManager(){
+        int cod;
+        do {
+            System.out.println("¿Que tipo de Base de datos quieres utilizar?");
+            System.out.println("1. MySql");
+            System.out.println("2. Sqlite");
+            System.out.print("Ingrese opcion: ");
+            cod = scanner.nextInt();
+
+        }while (cod!= 1 && cod != 2);
+        cm.changeConection(cod);
     }
 }
