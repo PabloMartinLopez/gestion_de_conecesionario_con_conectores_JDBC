@@ -1,7 +1,9 @@
 package model;
 
+import java.util.UUID;
+
 public class Propietario {
-    private int id;
+    private String id;
     private String dni;
     private String nombre;
     private String apellido;
@@ -10,7 +12,7 @@ public class Propietario {
     public Propietario() {
     }
 
-    public Propietario(int id, String dni, String nombre, String apellido, String telefono) {
+    public Propietario(String id, String dni, String nombre, String apellido, String telefono) {
         this.id = id;
         this.dni = dni;
         this.nombre = nombre;
@@ -19,11 +21,11 @@ public class Propietario {
     }
 
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

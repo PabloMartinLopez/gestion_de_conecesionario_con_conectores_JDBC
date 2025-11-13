@@ -40,4 +40,12 @@ public class ConecctionManager {
 
         return url;
     }
+
+    public Boolean getBdMysql() {
+        return bdMysql;
+    }
+
+    public Boolean getBdSqlite() {
+        return bdSqlite;
+    }
 }
