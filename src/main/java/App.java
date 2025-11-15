@@ -41,6 +41,7 @@ public class App {
         System.out.println("2. Insertar nuevo propietario");
         System.out.println("3. Insertar nuevo coche");
         System.out.println("4. Mostrar coches del concesionario");
+        System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
     }
@@ -62,7 +63,12 @@ public class App {
                 break;
             case 4:
                 buscarConcesionario();
+                break;
+            case -1:
+                connectionManager();
+                break;
             case 0: break;
+
             default:
                 System.out.println("Opción no válida. Inténtalo de nuevo." + option);
         }
