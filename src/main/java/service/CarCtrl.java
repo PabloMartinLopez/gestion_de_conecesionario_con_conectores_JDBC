@@ -3,9 +3,9 @@ package service;
 import com.mysql.cj.jdbc.ConnectionImpl;
 import model.Car;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CarCtrl {
     private String URL;
@@ -33,5 +33,37 @@ public class CarCtrl {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public List<Car> search(int id){
+        String sql = "Select * FROM `coches` WHERE `id_propietario` = ?;";
+
+        List<Car> coches = new ArrayList<>();
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, String.valueOf(id));
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+
+                String matricula = rs.getString("matricula");
+                String marca = rs.getString("marca");
+                String modelo = rs.getString("modelo");
+                List<String> extras = List.of(rs.getString("extras").split(", "));
+                Float precio = Float.valueOf(rs.getString("precio"));
+
+                Car coche = new Car(matricula, marca, modelo,extras, precio);
+
+                coches.add(coche);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return coches;
+
     }
 }

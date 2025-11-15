@@ -82,4 +82,9 @@ public class Car {
     public void setPropietario(Propietario propietario) {
         this.propietario = propietario;
     }
+
+    @Override
+    public String toString() {
+        return this.matricula + " -- " + this.marca + " -- " + this.modelo + " -- " + this.extras.toString() + " -- " + this.precio;
+    }
 }

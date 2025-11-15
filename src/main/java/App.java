@@ -40,6 +40,7 @@ public class App {
         System.out.println("1. Crear base de datos");
         System.out.println("2. Insertar nuevo propietario");
         System.out.println("3. Insertar nuevo coche");
+        System.out.println("4. Mostrar coches del concesionario");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
     }
@@ -59,9 +60,24 @@ public class App {
             case 3:
                 createCar();
                 break;
+            case 4:
+                buscarConcesionario();
             case 0: break;
             default:
                 System.out.println("Opción no válida. Inténtalo de nuevo." + option);
+        }
+    }
+
+    /**
+     * Metodo para buscar todos los coches del concesionario
+     */
+    private static void buscarConcesionario() {
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+
+        List<Car> coches = carCtrl.search(1);
+
+        for (Car car : coches) {
+            System.out.println(car);
         }
     }
 
