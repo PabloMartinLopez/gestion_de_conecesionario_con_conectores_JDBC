@@ -1,9 +1,12 @@
+import model.Car;
 import model.Propietario;
+import service.CarCtrl;
 import service.PropietarioCtrl;
 import util.ConecctionManager;
 import util.ConfigLoader;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
@@ -36,6 +39,7 @@ public class App {
         System.out.println("\n--- GESTIÓN CONCESIONARIO ---");
         System.out.println("1. Crear base de datos");
         System.out.println("2. Insertar nuevo propietario");
+        System.out.println("3. Insertar nuevo coche");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
     }
@@ -52,11 +56,53 @@ public class App {
             case 2:
                 createPropietario();
                 break;
+            case 3:
+                createCar();
+                break;
             case 0: break;
             default:
                 System.out.println("Opción no válida. Inténtalo de nuevo." + option);
         }
     }
+
+    /**
+     * Crear nuevo coche
+     */
+    private static void createCar() {
+        System.out.println("\n --- Insertar Nuevo Coche --- ");
+        System.out.print("Matricula: ");
+        String matricula = scanner.nextLine();
+        System.out.print("Marca: ");
+        String marca = scanner.nextLine();
+        System.out.print("Modelo: ");
+        String modelo = scanner.nextLine();
+        System.out.print("Precio: ");
+        Float precio = Float.valueOf(scanner.nextLine());
+
+        List<String> extras = extrasToList();
+
+        Car car = new Car(matricula,marca,modelo, extras, precio);
+
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+        carCtrl.insert(car);
+
+    }
+
+    /**
+     * Metodo para preparar la lista de extras
+     * @return
+     */
+    public static List<String> extrasToList(){
+        Scanner s = new Scanner(System.in);
+
+        System.out.println("Escribe todos los extras separados por coma:");
+        System.out.println("Si no tiene ningun extra deja vacio");
+
+        String extra = s.nextLine();
+
+        return List.of(extra.split(","));
+    }
+
 
     /**
      * Crear nuevo propietario
@@ -127,7 +173,9 @@ public class App {
                       telefono VARCHAR(15) NOT NULL
                   )
                   """;
+            String insertDefault = "INSERT INTO propietarios (dni, nombre, apellidos, telefono) VALUES ('00000000X', 'Concesionario', 'Concesionario', '666777888');";
             stmt.executeUpdate(sqlCreatePropietarios);
+            stmt.executeUpdate(insertDefault);
 
             // =========================================
             // COCHES

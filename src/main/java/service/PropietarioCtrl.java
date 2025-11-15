@@ -14,6 +14,7 @@ public class PropietarioCtrl {
     public int insert(Propietario propietario){
 
         String sql = "INSERT INTO `propietarios` (`id`, `dni`, `nombre`, `apellidos`, `telefono`) VALUES (?, ?, ?, ?, ?);";
+
         try(Connection connection = DriverManager.getConnection(URL);
             PreparedStatement pstmt = connection.prepareStatement(sql)){
 
