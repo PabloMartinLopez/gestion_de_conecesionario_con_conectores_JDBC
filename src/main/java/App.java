@@ -93,8 +93,13 @@ public class App {
 
         System.out.println("Introduce el DNI del propietario que quiere buscar:");
         List<Car> coches = carCtrl.searchPropietario(scanner.nextLine());
-        for (Car car : coches) {
-            System.out.println(car);
+
+        if (coches != null) {
+            for (Car car : coches) {
+                System.out.println(car);
+            }
+        }else{
+            System.out.println("Sin vehiculos asociados a propietario");
         }
     }
 
@@ -106,8 +111,12 @@ public class App {
 
         List<Car> coches = carCtrl.search(1);
 
-        for (Car car : coches) {
-            System.out.println(car);
+        if (coches != null) {
+            for (Car car : coches) {
+                System.out.println(car);
+            }
+        }else{
+            System.out.println("Sin vehiculos asociados a propietario");
         }
     }
 
@@ -130,7 +139,13 @@ public class App {
         Car car = new Car(matricula,marca,modelo, extras, precio);
 
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
-        carCtrl.insert(car);
+
+
+        if (carCtrl.insert(car)!=0){
+            System.out.println("Vehiculo agregado correctamente");
+        }else{
+            System.out.println("Hubo un erro al crear el vehiculo");
+        }
 
     }
 
@@ -172,10 +187,13 @@ public class App {
         propietario.setTelefono(telefono);
 
         PropietarioCtrl propietarioCtrl = new PropietarioCtrl(cm.getUrl());
-        propietarioCtrl.insert(propietario);
 
-        System.out.println("Registro guardado");
 
+        if (propietarioCtrl.insert(propietario)!=0){
+            System.out.println("Propietario agregado correctamente");
+        }else{
+            System.out.println("Hubo un erro al crear el propietario");
+        }
     }
 
     /**

@@ -28,7 +28,8 @@ public class PropietarioCtrl {
             return filas;
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+        return 0;
     }
 }
