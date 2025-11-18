@@ -9,10 +9,18 @@ public class ConecctionManager {
 
     private String url ="";
 
+    /**
+     * Constructor para iniciar la coneccion con la bd
+     * @param codigo Tipo de conexcion que se va a emplear
+     */
     public ConecctionManager(int codigo) {
         changeConection(codigo);
     }
 
+    /**
+     * Metodo para iniciar la coneccion con la bd
+     * @param codigo Tipo de conexcion que se va a emplear
+     */
     public void changeConection(int codigo){
         switch (codigo) {
             case 1:
@@ -29,7 +37,10 @@ public class ConecctionManager {
     }
 
 
-
+    /**
+     * metodo para devolver la url de la conexion con la bd
+     * @return url de la conexion
+     */
     public String getUrl(){
 
         if (bdMysql){

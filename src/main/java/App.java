@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    private static ConfigLoader config = new ConfigLoader();
     private static Scanner scanner = new Scanner(System.in);
     private static ConecctionManager cm = new ConecctionManager(1);
 

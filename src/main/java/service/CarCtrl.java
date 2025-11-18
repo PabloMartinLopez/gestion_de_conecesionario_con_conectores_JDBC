@@ -14,6 +14,11 @@ public class CarCtrl {
         this.URL = URL;
     }
 
+    /**
+     * Insertar un nuevo vehiculo en la base de datos
+     * @param car
+     * @return
+     */
     public int insert(Car car) {
         String sql = "INSERT INTO `coches` (`matricula`, `marca`, `modelo`, `extras`, `precio`, `id_propietario`)" +
                 " VALUES (?, ?, ?, ?, ?, 1);";
@@ -35,6 +40,11 @@ public class CarCtrl {
         return 0;
     }
 
+    /**
+     * Buscar un coche basado en el id del propietario
+     * @param id del propietario
+     * @return
+     */
     public List<Car> search(int id){
         String sql = "Select * FROM `coches` WHERE `id_propietario` = ?;";
 
@@ -66,6 +76,11 @@ public class CarCtrl {
         return coches;
     }
 
+    /**
+     * Buscar coches de un propietario basandonos en el dni del mismo
+     * @param dni del propietario
+     * @return
+     */
     public List<Car> searchPropietario(String dni){
         String sql ="SELECT * FROM coches c JOIN propietarios p ON p.id = c.id_propietario WHERE p.dni LIKE ?";
 
@@ -91,6 +106,11 @@ public class CarCtrl {
         return coches;
     }
 
+    /**
+     * Buscar coche por matricula
+     * @param matriculaBusq matricula del vehiculo
+     * @return
+     */
     public Car search(String matriculaBusq) {
         String sql = "SELECT * FROM `coches` WHERE matricula = ?;";
 

@@ -11,6 +11,11 @@ public class PropietarioCtrl {
         this.URL = URL;
     }
 
+    /**
+     * Creacion de propietario
+     * @param propietario
+     * @return int
+     */
     public int insert(Propietario propietario){
 
         String sql = "INSERT INTO `propietarios` (`id`, `dni`, `nombre`, `apellidos`, `telefono`) VALUES (?, ?, ?, ?, ?);";
