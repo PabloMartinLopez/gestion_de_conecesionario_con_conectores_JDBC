@@ -63,7 +63,6 @@ public class CarCtrl {
                 String modelo = rs.getString("modelo");
                 List<String> extras = List.of(rs.getString("extras").split(", "));
                 Float precio = Float.valueOf(rs.getString("precio"));
-
                 Car coche = new Car(matricula, marca, modelo,extras, precio);
 
                 coches.add(coche);
@@ -169,5 +168,25 @@ public class CarCtrl {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public boolean delete(Car coche) {
+
+        String sql ="DELETE FROM `coches` WHERE `matricula` = ?;";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, coche.getMatricula());
+
+
+            int filas= pstmt.executeUpdate();
+            return filas > 0;
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

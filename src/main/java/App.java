@@ -1,3 +1,4 @@
+import Exeptions.CarNotFoundException;
 import model.Car;
 import model.Propietario;
 import service.CarCtrl;
@@ -42,6 +43,8 @@ public class App {
         System.out.println("4. Mostrar coches del concesionario");
         System.out.println("5. Mostrar coches Segun propietario");
         System.out.println("6. Modificar coche");
+        System.out.println("7. Eliminar coche");
+        System.out.println("8. Traspaso");
         System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
@@ -52,20 +55,50 @@ public class App {
      * @param option Int Opcion del menu por el usuario
      */
     private static void handleOption(int option) {
-        switch (option) {
-            case 1->createDatabase();
-            case 2->createPropietario();
-            case 3->createCar();
-            case 4-> buscarConcesionario();
-            case 5 -> buscarPropietario();
-            case 6 -> modificarCoche();
-            case -1 ->connectionManager();
-            case 0 -> {
-                System.exit(0);
+        try{
+            switch (option) {
+                case 1->createDatabase();
+                case 2->createPropietario();
+                case 3->createCar();
+                case 4-> buscarConcesionario();
+                case 5 -> buscarPropietario();
+                case 6 -> modificarCoche();
+                case 7 -> eliminarCoche();
+                case 8 -> traspaso();
+                case -1 ->connectionManager();
+                case 0 -> {
+                    System.exit(0);
+                }
+                default-> {
+                    System.out.println("Opción no válida. Inténtalo de nuevo." + option);
+                }
             }
-            default-> {
-                System.out.println("Opción no válida. Inténtalo de nuevo." + option);
-            }
+        } catch (CarNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void traspaso() {
+
+
+
+    }
+
+    private static void eliminarCoche() throws CarNotFoundException {
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+        System.out.println("Introduce la matricula del coche que quieres modificar:");
+
+        Car coche = carCtrl.search(scanner.nextLine());
+
+        if (coche== null){
+            throw new CarNotFoundException("No se encontro el coche.");
+        }
+
+        if (carCtrl.delete(coche)){
+            System.out.println("Coche eliminado correctamente.");
+        }
+        else{
+            System.out.println("Error al eliminar el coche");
         }
     }
 
@@ -100,7 +133,7 @@ public class App {
             }
 
         }else{
-            System.out.println("Coche no encontrado");
+            throw new CarNotFoundException("Coche no encontrado");
         }
     }
 
@@ -118,7 +151,7 @@ public class App {
                 System.out.println(car);
             }
         }else{
-            System.out.println("Sin vehiculos asociados a propietario");
+            throw new CarNotFoundException("No se encontraron vehiculos asociados al propietario");
         }
     }
 
@@ -135,7 +168,7 @@ public class App {
                 System.out.println(car);
             }
         }else{
-            System.out.println("Sin vehiculos asociados a propietario");
+            throw new CarNotFoundException("No se encontraron vehiculos asociados al propietario");
         }
     }
 
