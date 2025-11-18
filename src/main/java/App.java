@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class App {
-    private static Scanner scanner = new Scanner(System.in);
-    private static ConecctionManager cm = new ConecctionManager(1);
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final ConecctionManager cm = new ConecctionManager(1);
 
     public static void main(String[] args) {
 
@@ -41,7 +41,7 @@ public class App {
         System.out.println("3. Insertar nuevo coche");
         System.out.println("4. Mostrar coches del concesionario");
         System.out.println("5. Mostrar coches Segun propietario");
-        System.out.println("6. Mostrar coches Segun propietario");
+        System.out.println("6. Modificar coche1");
         System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
@@ -57,8 +57,8 @@ public class App {
             case 2->createPropietario();
             case 3->createCar();
             case 4-> buscarConcesionario();
-            case 5 ->  buscarPropietario();
-            case 6 ->  modificarCoche();
+            case 5 -> buscarPropietario();
+            case 6 -> modificarCoche();
             case -1 ->connectionManager();
             case 0 -> {
                 System.exit(0);
@@ -79,6 +79,24 @@ public class App {
 
         if (coche != null) {
             System.out.println(coche);
+
+            System.out.println("\n --- Actualizar Coche --- ");
+            System.out.print("Marca: ");
+            String marca = scanner.nextLine();
+            coche.setMarca(marca);
+            System.out.print("Modelo: ");
+            String modelo = scanner.nextLine();
+            coche.setModelo(modelo);
+            System.out.print("Precio: ");
+            Float precio = Float.valueOf(scanner.nextLine());
+            coche.setPrecio(precio);
+
+            List<String> extras = extrasToList();
+            coche.setExtras(extras);
+
+            carCtrl.update(coche);
+
+
         }else{
             System.out.println("Coche no encontrado");
         }
@@ -221,8 +239,8 @@ public class App {
                     ? """
                   CREATE TABLE propietarios (
                       id INTEGER PRIMARY KEY AUTOINCREMENT,
-                      dni TEXT NOT NULL,
-                      nombre TEXT NOT NULL UNIQUE,
+                      dni TEXT NOT NULL UNIQUE,
+                      nombre TEXT NOT NULL,
                       apellidos TEXT NOT NULL,
                       telefono TEXT NOT NULL
                   )
@@ -230,8 +248,8 @@ public class App {
                     : """
                   CREATE TABLE propietarios (
                       id INT AUTO_INCREMENT PRIMARY KEY,
-                      dni VARCHAR(100) NOT NULL,
-                      nombre VARCHAR(100) NOT NULL UNIQUE,
+                      dni VARCHAR(100) NOT NULL UNIQUE,
+                      nombre VARCHAR(100) NOT NULL,
                       apellidos VARCHAR(150) NOT NULL,
                       telefono VARCHAR(15) NOT NULL
                   )

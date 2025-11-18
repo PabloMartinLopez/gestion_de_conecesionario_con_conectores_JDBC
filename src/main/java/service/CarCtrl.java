@@ -136,4 +136,13 @@ public class CarCtrl {
         }
         return null;
     }
+
+    /**
+     * Actualizar coche
+     * @param coche
+     */
+    public void update(Car coche) {
+        String sql ="";
+
+    }
 }
