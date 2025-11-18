@@ -1,7 +1,7 @@
 package service;
 
-import com.mysql.cj.jdbc.ConnectionImpl;
 import model.Car;
+import model.Propietario;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -127,7 +127,12 @@ public class CarCtrl {
                 String modelo = rs.getString("modelo");
                 List<String> extras = List.of(rs.getString("extras").split(", "));
                 Float precio = Float.valueOf(rs.getString("precio"));
-                return  new Car(matricula, marca, modelo,extras, precio);
+                int propietarioId = rs.getInt("id_propietario");
+
+                PropietarioCtrl propietarioCtrl = new PropietarioCtrl(URL);
+                Propietario propietario = propietarioCtrl.search(propietarioId);
+
+                return  new Car(matricula, marca, modelo,extras, precio, propietario);
             }
 
 
@@ -139,10 +144,30 @@ public class CarCtrl {
 
     /**
      * Actualizar coche
+     *
      * @param coche
+     * @return
      */
-    public void update(Car coche) {
-        String sql ="";
+    public int update(Car coche) {
+        String sql ="UPDATE `coches` SET `marca`=?,`modelo`=?,`extras`=?,`precio`=?,`id_propietario`=? WHERE `matricula` = ?";
 
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, coche.getMarca());
+            pstmt.setString(2, coche.getModelo());
+            pstmt.setString(3, coche.getExtrasString());
+            pstmt.setString(4, coche.getPrecio().toString());
+            pstmt.setString(5, coche.getPropietario().getId());
+            pstmt.setString(6, coche.getMatricula());
+
+            int filas= pstmt.executeUpdate();
+            return filas;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

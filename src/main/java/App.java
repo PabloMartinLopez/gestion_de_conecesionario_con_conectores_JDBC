@@ -41,7 +41,7 @@ public class App {
         System.out.println("3. Insertar nuevo coche");
         System.out.println("4. Mostrar coches del concesionario");
         System.out.println("5. Mostrar coches Segun propietario");
-        System.out.println("6. Modificar coche1");
+        System.out.println("6. Modificar coche");
         System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
@@ -70,7 +70,6 @@ public class App {
     }
 
     private static void modificarCoche() {
-
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
 
         System.out.println("Introduce la matricula del coche que quieres modificar:");
@@ -94,8 +93,11 @@ public class App {
             List<String> extras = extrasToList();
             coche.setExtras(extras);
 
-            carCtrl.update(coche);
-
+            if (carCtrl.update(coche)!=0){
+                System.out.println("Coche actualizado");
+            }else{
+                System.out.println("Error al actualizar");
+            }
 
         }else{
             System.out.println("Coche no encontrado");

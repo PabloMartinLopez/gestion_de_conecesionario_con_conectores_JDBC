@@ -37,4 +37,31 @@ public class PropietarioCtrl {
         }
         return 0;
     }
+
+    public Propietario search(int id){
+        String sql = "SELECT * FROM `propietarios` WHERE `id` = ?;";
+
+        try(Connection connection = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = connection.prepareStatement(sql)){
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+
+                String ident = rs.getString("id");
+                String dni = rs.getString("dni");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellidos");
+                String telefono = rs.getString("telefono");
+
+                Propietario propietario = new  Propietario(ident,dni,nombre,apellido,telefono);
+
+                return propietario;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
