@@ -41,6 +41,7 @@ public class App {
         System.out.println("2. Insertar nuevo propietario");
         System.out.println("3. Insertar nuevo coche");
         System.out.println("4. Mostrar coches del concesionario");
+        System.out.println("5. Mostrar coches Segun propietario");
         System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
@@ -64,6 +65,8 @@ public class App {
             case 4:
                 buscarConcesionario();
                 break;
+            case 5:
+                buscarPropietario();
             case -1:
                 connectionManager();
                 break;
@@ -71,6 +74,16 @@ public class App {
 
             default:
                 System.out.println("Opción no válida. Inténtalo de nuevo." + option);
+        }
+    }
+
+    private static void buscarPropietario() {
+
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+
+        List<Car> coches = carCtrl.searchPropietario(scanner.nextLine());
+        for (Car car : coches) {
+            System.out.println(car);
         }
     }
 

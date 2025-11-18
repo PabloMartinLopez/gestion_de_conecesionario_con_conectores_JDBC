@@ -64,6 +64,30 @@ public class CarCtrl {
         }
 
         return coches;
+    }
 
+    public List<Car> searchPropietario(String dni){
+        String sql ="SELECT * FROM coches c JOIN propietarios p ON p.id = c.id_propietario WHERE p.dni LIKE ?";
+
+        List<Car> coches = new ArrayList<>();
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, "%"+dni+"%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String matricula = rs.getString("matricula");
+                String marca = rs.getString("marca");
+                String modelo = rs.getString("modelo");
+                List<String> extras = List.of(rs.getString("extras").split(", "));
+                Float precio = Float.valueOf(rs.getString("precio"));
+
+                coches.add(new Car(matricula, marca, modelo,extras, precio));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return coches;
     }
 }
