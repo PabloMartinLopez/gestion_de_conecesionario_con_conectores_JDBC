@@ -90,4 +90,30 @@ public class CarCtrl {
         }
         return coches;
     }
+
+    public Car search(String matriculaBusq) {
+        String sql = "SELECT * FROM `coches` WHERE matricula = ?;";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, matriculaBusq);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+
+                String matricula = rs.getString("matricula");
+                String marca = rs.getString("marca");
+                String modelo = rs.getString("modelo");
+                List<String> extras = List.of(rs.getString("extras").split(", "));
+                Float precio = Float.valueOf(rs.getString("precio"));
+                return  new Car(matricula, marca, modelo,extras, precio);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
