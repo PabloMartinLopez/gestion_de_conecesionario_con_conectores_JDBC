@@ -44,6 +44,7 @@ public class App {
      * Mostrar menu con todas sus opciones
      */
     private static void showMenu() {
+        boolean useSQLite = cm.getBdSqlite();
         System.out.println("\n--- GESTIÓN CONCESIONARIO ---");
         System.out.println("1. Crear base de datos");
         System.out.println("2. Insertar nuevo propietario");
@@ -54,7 +55,13 @@ public class App {
         System.out.println("7. Eliminar coche");
         System.out.println("8. Traspaso");
         System.out.println("9. Importar CSV");
+        System.out.println("10. Crear informe");
         System.out.println("-1. Cambiar modo DB");
+
+        if(useSQLite){
+            System.out.println("11. Ejecutar procedimiento almacenado");
+        }
+
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
     }
@@ -76,6 +83,7 @@ public class App {
                 case 8 -> traspaso();
                 case 9 -> importarcsv();
                 case 10 -> crearInforme();
+                case 11 -> ejecutarProcedimiento();
                 case -1 ->connectionManager();
                 case 0 -> {
                     System.exit(0);
@@ -87,6 +95,10 @@ public class App {
         } catch (CarNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void ejecutarProcedimiento() {
+
     }
 
     /**
@@ -563,6 +575,11 @@ public class App {
                   )
                   """;
             stmt.executeUpdate(sqlCreateTraspasos);
+
+
+            if (!useSQLite) {
+
+            }
 
             System.out.println("✅ Tablas creadas correctamente para " + (useSQLite ? "SQLite" : "MySQL"));
 
