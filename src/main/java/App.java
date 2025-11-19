@@ -1,6 +1,5 @@
 import Exeptions.CarNotFoundException;
 import Exeptions.PropietarioNotFoundException;
-import Exeptions.TraspasoException;
 import model.Car;
 import model.Propietario;
 import model.Traspaso;
@@ -8,15 +7,18 @@ import service.CarCtrl;
 import service.PropietarioCtrl;
 import service.TraspasoCtrl;
 import util.ConecctionManager;
+import util.ConfigLoader;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class App {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ConecctionManager cm = new ConecctionManager(1);
+    private static ConfigLoader config = new ConfigLoader();
 
     public static void main(String[] args) {
 
@@ -50,6 +52,7 @@ public class App {
         System.out.println("6. Modificar coche");
         System.out.println("7. Eliminar coche");
         System.out.println("8. Traspaso");
+        System.out.println("9. Importar CSV");
         System.out.println("-1. Cambiar modo DB");
         System.out.println("0. Salir");
         System.out.print("Elige una opción: ");
@@ -70,6 +73,7 @@ public class App {
                 case 6 -> modificarCoche();
                 case 7 -> eliminarCoche();
                 case 8 -> traspaso();
+                case 9 -> importarcsv();
                 case -1 ->connectionManager();
                 case 0 -> {
                     System.exit(0);
@@ -83,6 +87,60 @@ public class App {
         }
     }
 
+    /**
+     * Cargar csv
+     */
+    private static void importarcsv() {
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+        String csv = config.getProperty("CSVFileDefault");
+
+        List<Car> cars = new ArrayList<>();
+        List<Car> cochesError = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(csv))) {
+            String line;
+            br.readLine();
+            contador = 0;
+            while ((line = br.readLine()) != null) {
+                String[] cocheArr = line.split(";");
+
+                String[] extrasArray = cocheArr[3].split("\\|");
+                List<String> extrasList = Arrays.asList(extrasArray);
+
+                Float precioFloat = Float.parseFloat(cocheArr[4]);
+
+                Car coche = new Car(cocheArr[0], cocheArr[1], cocheArr[2], extrasList, precioFloat);
+                cars.add(coche);
+            }
+
+            for (Car car : cars) {
+                try{
+                    if (carCtrl.insert(car)){
+                        System.out.println(car);
+                    }else{
+                        cochesError.add(car);
+                        throw new CarNotFoundException("Error al insertar el coche");
+                    }
+                } catch (CarNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(!cochesError.isEmpty()){
+            System.out.println("Error al insertar estos vehiculos");
+            for (Car car : cochesError) {
+                System.out.println(car);
+            }
+        }
+
+    }
+
+    /**
+     * Realizar traspaso entre usuarios
+     * @throws CarNotFoundException
+     */
     private static void traspaso() throws CarNotFoundException {
         PropietarioCtrl propietarioCtrl = new PropietarioCtrl(cm.getUrl());
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
@@ -115,7 +173,6 @@ public class App {
 
                     System.out.print("Introduzca el monto de la transaccion: ");
                     int monto = scanner.nextInt();
-                    //TODO Operation tocha
                     Traspaso traspaso = new Traspaso(matricula, Integer.parseInt(vendedor.getId()), Integer.parseInt(comprador.getId()), monto);
 
                     TraspasoCtrl traspasoCtrl = new TraspasoCtrl(cm.getUrl());
@@ -139,6 +196,10 @@ public class App {
 
     }
 
+    /**
+     * Eliminar un vehiculo
+     * @throws CarNotFoundException
+     */
     private static void eliminarCoche() throws CarNotFoundException {
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
         System.out.println("Introduce la matricula del coche que quieres modificar:");
@@ -157,6 +218,9 @@ public class App {
         }
     }
 
+    /**
+     * Metodo para modificar un vehiculo
+     */
     private static void modificarCoche() {
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
 
@@ -248,7 +312,7 @@ public class App {
         CarCtrl carCtrl = new CarCtrl(cm.getUrl());
 
 
-        if (carCtrl.insert(car)!=0){
+        if (carCtrl.insert(car)){
             System.out.println("Vehiculo agregado correctamente");
         }else{
             System.out.println("Hubo un erro al crear el vehiculo");

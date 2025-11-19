@@ -17,10 +17,11 @@ public class CarCtrl {
 
     /**
      * Insertar un nuevo vehiculo en la base de datos
+     *
      * @param car
      * @return
      */
-    public int insert(Car car) {
+    public boolean insert(Car car) {
         String sql = "INSERT INTO `coches` (`matricula`, `marca`, `modelo`, `extras`, `precio`, `id_propietario`)" +
                 " VALUES (?, ?, ?, ?, ?, 1);";
 
@@ -33,12 +34,26 @@ public class CarCtrl {
             pstmt.setString(4, car.getExtrasString());
             pstmt.setString(5, car.getPrecio().toString());
 
-            int filas = pstmt.executeUpdate();
-            return filas;
-        }catch (Exception e){
+            return pstmt.executeUpdate() != 0;
+        } catch (SQLException e) { // Capturamos la excepción SQL
+
+            // El código 1062 es el código de error de MySQL para "Duplicate entry"
+            if (e.getErrorCode() == 1062) {
+                // Manejo específico: La matrícula ya existe.
+                System.err.println("❌ ERROR: La matrícula '" + car.getMatricula() + "' ya existe. Omitiendo inserción.");
+                // Podemos retornar true (indicando que el coche "existe" aunque no se insertó)
+                // o false (indicando que la operación de inserción NO se realizó con éxito).
+                // Se recomienda retornar false para ser consistente con la lógica de inserción fallida.
+                return false;
+            } else {
+                // Manejar otros errores SQL (problemas de conexión, sintaxis, etc.)
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            // Manejar cualquier otra excepción no relacionada con SQL
             e.printStackTrace();
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -70,7 +85,7 @@ public class CarCtrl {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         return coches;
