@@ -188,6 +188,41 @@ public class CarCtrl {
         return 0;
     }
 
+    /**
+     * Sacar todos los coches
+     * @param
+     * @return
+     */
+    public List<Car> getInforme() {
+        String sql = "SELECT * FROM coches";
+
+        try(Connection conn = DriverManager.getConnection(URL);
+            Statement stmt = conn.createStatement()) {
+
+            ResultSet rs = stmt.executeQuery(sql);
+            List<Car> coches = new ArrayList<>();
+            while (rs.next()) {
+                String matricula = rs.getString("matricula");
+                String marca = rs.getString("marca");
+                String modelo = rs.getString("modelo");
+                List<String> extras = List.of(rs.getString("extras").split(", "));
+                Float precio = Float.valueOf(rs.getString("precio"));
+                int propietarioId = rs.getInt("id_propietario");
+
+                PropietarioCtrl propietarioCtrl = new PropietarioCtrl(URL);
+                Propietario propietario = propietarioCtrl.search(propietarioId);
+                coches.add(new Car(matricula, marca, modelo,extras, precio, propietario));
+
+            }
+
+            return coches;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean delete(Car coche) {
 
         String sql ="DELETE FROM `coches` WHERE `matricula` = ?;";

@@ -9,11 +9,12 @@ import service.TraspasoCtrl;
 import util.ConecctionManager;
 import util.ConfigLoader;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class App {
     private static final Scanner scanner = new Scanner(System.in);
@@ -74,6 +75,7 @@ public class App {
                 case 7 -> eliminarCoche();
                 case 8 -> traspaso();
                 case 9 -> importarcsv();
+                case 10 -> crearInforme();
                 case -1 ->connectionManager();
                 case 0 -> {
                     System.exit(0);
@@ -88,6 +90,99 @@ public class App {
     }
 
     /**
+     * Crear informe en un fichero .txt
+     */
+    private static void crearInforme() {
+
+        Path ruta = Paths.get("informe_concesionario.txt");
+
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
+        List<Car> coches = carCtrl.getInforme();
+
+        StringBuilder stringInforme = new StringBuilder();
+
+        try {
+            if (coches == null || coches.isEmpty()) {
+                throw new CarNotFoundException("No se encontraron coches en la base de datos.");
+            }
+
+            // calculos
+            Map<String, List<Car>> cochesPorMarca = coches.stream()
+                    .collect(Collectors.groupingBy(Car::getMarca));
+
+            String extraMasRepetido = getExtraMasRepetido(coches);
+
+            // contenido del informe
+            int totalVehiculos = coches.size();
+
+            stringInforme.append("==================================================\n");
+            stringInforme.append("        INFORME RESUMEN DEL CONCESIONARIO         \n");
+            stringInforme.append("==================================================\n\n");
+
+            stringInforme.append("🚗 TOTAL DE VEHÍCULOS: ").append(totalVehiculos).append("\n\n");
+            stringInforme.append("--------------------------------------------------\n");
+
+            stringInforme.append("✨ EXTRA MÁS REPETIDO EN TODOS LOS COCHES:\n");
+            stringInforme.append(extraMasRepetido).append("\n\n");
+            stringInforme.append("--------------------------------------------------\n");
+
+
+            stringInforme.append("📋 LISTADO DE COCHES AGRUPADOS POR MARCA:\n\n");
+            cochesPorMarca.forEach((marca, listaCoches) -> {
+                stringInforme.append("  > MARCA: ").append(marca).append(" (Total: ").append(listaCoches.size()).append(")\n");
+                listaCoches.forEach(coche -> stringInforme.append("    - ").append(coche.toString()).append("\n"));
+                stringInforme.append("\n");
+            });
+
+
+//            Escritura del informe
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(ruta.toFile()))) {
+                writer.write(stringInforme.toString());
+                System.out.println("✅ Informe generado con éxito en: " + ruta.toAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Error al escribir el fichero: " + e.getMessage());
+            }
+
+
+        } catch (CarNotFoundException e) {
+            System.err.println("Advertencia: " + e.getMessage());
+            // No es necesario lanzar un RuntimeException si solo es una advertencia.
+        }
+    }
+
+    /**
+     * Consegir el extra mas repedito
+     * @param coches
+     * @return
+     */
+    private static String getExtraMasRepetido(List<Car> coches) {
+        Map<String, Long> frecuenciaExtras = new HashMap<>();
+
+        // 1. Contar la frecuencia de cada extra
+        coches.stream()
+                .flatMap(car -> car.getExtras().stream()) // Combina todas las listas de extras en un solo stream
+                .filter(extra -> extra != null && !extra.trim().isEmpty()) // Ignora extras nulos o vacíos
+                .map(String::trim) // Limpia espacios en blanco
+                .collect(Collectors.groupingBy(
+                        extra -> extra,
+                        Collectors.counting()
+                ))
+                .forEach(frecuenciaExtras::put); // Transfiere el resultado al mapa
+
+        if (frecuenciaExtras.isEmpty()) {
+            return "No hay extras registrados.";
+        }
+
+        // 2. Encontrar el extra con la máxima frecuencia
+        Map.Entry<String, Long> maxEntry = Collections.max(
+                frecuenciaExtras.entrySet(),
+                Map.Entry.comparingByValue()
+        );
+
+        return maxEntry.getKey() + " (Aparece " + maxEntry.getValue() + " veces)";
+    }
+
+    /**
      * Cargar csv
      */
     private static void importarcsv() {
@@ -99,7 +194,6 @@ public class App {
         try (BufferedReader br = new BufferedReader(new FileReader(csv))) {
             String line;
             br.readLine();
-            contador = 0;
             while ((line = br.readLine()) != null) {
                 String[] cocheArr = line.split(";");
 
