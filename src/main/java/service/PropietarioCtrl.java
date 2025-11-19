@@ -1,5 +1,6 @@
 package service;
 
+import Exeptions.PropietarioNotFoundException;
 import model.Propietario;
 
 import java.sql.*;
@@ -59,6 +60,33 @@ public class PropietarioCtrl {
                 return propietario;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Propietario search(String dni) throws PropietarioNotFoundException {
+        String sql = "SELECT * FROM `propietarios` WHERE dni = ?;";
+
+
+
+        try(Connection connection = DriverManager.getConnection(URL);
+            PreparedStatement pstmt = connection.prepareStatement(sql)){
+
+            pstmt.setString(1, dni);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                String ident = rs.getString("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellidos");
+                String telefono = rs.getString("telefono");
+
+                return new Propietario(ident,dni,nombre,apellido,telefono);
+            }else {
+                throw new PropietarioNotFoundException("No se encontro el propietario");
+            }
+        }catch (SQLException e){
             e.printStackTrace();
         }
 

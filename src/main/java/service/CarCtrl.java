@@ -1,5 +1,6 @@
 package service;
 
+import Exeptions.CarNotFoundException;
 import model.Car;
 import model.Propietario;
 
@@ -132,6 +133,8 @@ public class CarCtrl {
                 Propietario propietario = propietarioCtrl.search(propietarioId);
 
                 return  new Car(matricula, marca, modelo,extras, precio, propietario);
+            }else{
+                throw  new CarNotFoundException("Matricula desconocida");
             }
 
 

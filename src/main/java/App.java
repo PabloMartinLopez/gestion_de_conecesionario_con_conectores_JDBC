@@ -1,13 +1,17 @@
 import Exeptions.CarNotFoundException;
+import Exeptions.PropietarioNotFoundException;
+import Exeptions.TraspasoException;
 import model.Car;
 import model.Propietario;
+import model.Traspaso;
 import service.CarCtrl;
 import service.PropietarioCtrl;
+import service.TraspasoCtrl;
 import util.ConecctionManager;
-import util.ConfigLoader;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class App {
@@ -26,6 +30,7 @@ public class App {
                 scanner.nextLine();
                 handleOption(option);
             } catch (NumberFormatException e) {
+                e.printStackTrace();
                 System.out.println("Error: Por favor, introduce un número válido.");
                 option = -1;
             }
@@ -78,8 +83,58 @@ public class App {
         }
     }
 
-    private static void traspaso() {
+    private static void traspaso() throws CarNotFoundException {
+        PropietarioCtrl propietarioCtrl = new PropietarioCtrl(cm.getUrl());
+        CarCtrl carCtrl = new CarCtrl(cm.getUrl());
 
+        try{
+            System.out.print("Introduzca el dni del vendedor: ");
+            Propietario vendedor = propietarioCtrl.search(scanner.nextLine());
+
+            List<Car> coches = carCtrl.searchPropietario(vendedor.getDni());
+
+            if(!coches.isEmpty()){
+                System.out.println("Coches del propietario: " + vendedor);
+                for (Car car : coches) {
+                    System.out.print(car);
+                }
+
+                System.out.println("\n¿Que coche quieres traspasar?");
+                System.out.println("Escribe la matricula del coche que quieras traspasar");
+                String matricula = scanner.nextLine();
+                Car cocheTraspaso = carCtrl.search(matricula);
+
+                if (Objects.equals(cocheTraspaso.getPropietario().getId(), vendedor.getId())) {
+                    System.out.println("¿Quien es el comprador?");
+                    System.out.print("Introduzca el dni del comprador: ");
+                    Propietario comprador = propietarioCtrl.search(scanner.nextLine());
+
+                    if (Objects.equals(comprador.getDni(), vendedor.getDni())) {
+                        throw new PropietarioNotFoundException("Comprador no encontrado");
+                    }
+
+                    System.out.print("Introduzca el monto de la transaccion: ");
+                    int monto = scanner.nextInt();
+                    //TODO Operation tocha
+                    Traspaso traspaso = new Traspaso(matricula, Integer.parseInt(vendedor.getId()), Integer.parseInt(comprador.getId()), monto);
+
+                    TraspasoCtrl traspasoCtrl = new TraspasoCtrl(cm.getUrl());
+
+                    traspasoCtrl.insertar(traspaso);
+
+
+                }else{
+                    throw new CarNotFoundException("Matricula desconocida");
+                }
+            }else{
+                throw new CarNotFoundException("No se encontraron coches para este vendedor");
+            }
+
+        }catch (PropietarioNotFoundException e){
+            e.printStackTrace();
+        }catch (CarNotFoundException e){
+            e.printStackTrace();
+        }
 
 
     }
