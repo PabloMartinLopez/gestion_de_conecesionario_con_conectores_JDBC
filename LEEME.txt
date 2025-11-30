@@ -1,0 +1,17 @@
+SQLite
+Ventajas:
+* Muy fáciles de usar: no necesitan servidor ni configuración compleja.
+* Ligeras, rápidas para aplicaciones pequeñas o de escritorio.
+
+Desventajas:
+* No están diseñadas para alta concurrencia.
+* Menos herramientas de administración avanzadas comparadas con motores de servidor.
+
+MySQL
+Ventajas:
+* Adecuadas para aplicaciones grandes, con muchos usuarios y alto tráfico.
+* Mejor rendimiento y estabilidad en entornos multiusuario.
+
+Desventajas:
+* Requieren instalación, administración y configuración de un servidor.
+* Consumen más recursos.

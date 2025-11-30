@@ -1,0 +1,22 @@
+==================================================
+        INFORME RESUMEN DEL CONCESIONARIO         
+==================================================
+
+🚗 TOTAL DE VEHÍCULOS: 3
+
+--------------------------------------------------
+✨ EXTRA MÁS REPETIDO EN TODOS LOS COCHES:
+[Llantas de aleación (Aparece 1 veces)
+
+--------------------------------------------------
+📋 LISTADO DE COCHES AGRUPADOS POR MARCA:
+
+  > MARCA: Seat (Total: 1)
+    - 3456JKL -- Seat -- Ibiza -- [[Climatizador, Sensor de aparcamiento]] -- 17999.99
+
+  > MARCA: Toyota (Total: 1)
+    - 1122QRS -- Toyota -- Yaris -- [[Llantas de aleación, Techo solar, Cámara trasera]] -- 21999.99
+
+  > MARCA: Peugeot (Total: 1)
+    - 7890MNP -- Peugeot -- 208 -- [[ ]] -- 19999.99
+
